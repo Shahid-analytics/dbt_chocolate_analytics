@@ -46,24 +46,18 @@ jobs:
 
       - name: Install dbt packages
         run: dbt deps
-        working-directory: dbt_chocolate_analytics
 
       - name: dbt compile
         run: dbt compile
-        working-directory: dbt_chocolate_analytics
 
       - name: dbt run - staging
         run: dbt run --select stage
-        working-directory: dbt_chocolate_analytics
 
       - name: dbt run - intermediate
         run: dbt run --select intermediate
-        working-directory: dbt_chocolate_analytics
 
       - name: dbt run - marts
         run: dbt run --select marts
-        working-directory: dbt_chocolate_analytics
 
       - name: dbt test
         run: dbt test
-        working-directory: dbt_chocolate_analytics
