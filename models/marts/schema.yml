@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: mart_customer_analysis
+    description: "Customer-level analysis with LTV, age groups, and loyalty segmentation."
+    columns:
+      - name: age
+        description: "Age of the customer. Must not exceed 80."
+        data_tests:
+          - not_greater_than:
+              max_value: 80

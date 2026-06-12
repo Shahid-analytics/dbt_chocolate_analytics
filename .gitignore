@@ -1,0 +1,8 @@
+#DBT
+target/
+dbt_packages/
+logs/
+
+#Sensitive
+profile.yml
+

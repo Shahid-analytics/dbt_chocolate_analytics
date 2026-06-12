@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    database: dbt_chocolate_db
+    schema: Raw
+    tables:
+      - name: Customers
+      - name: Products
+      - name: Sales
+      - name: Stores
