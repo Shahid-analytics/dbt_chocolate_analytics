@@ -1,0 +1,69 @@
+name: dbt CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dbt-ci:
+    name: dbt Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt-snowflake
+        run: pip install dbt-snowflake==1.11.5
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<EOF
+          dbt_chocolate_analytics:
+            outputs:
+              dev:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ${{ secrets.SNOWFLAKE_ROLE }}
+                database: ${{ secrets.SNOWFLAKE_DATABASE }}
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+                schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
+                threads: 4
+            target: dev
+          EOF
+
+      - name: Install dbt packages
+        run: dbt deps
+        working-directory: dbt_chocolate_analytics
+
+      - name: dbt compile
+        run: dbt compile
+        working-directory: dbt_chocolate_analytics
+
+      - name: dbt run - staging
+        run: dbt run --select stage
+        working-directory: dbt_chocolate_analytics
+
+      - name: dbt run - intermediate
+        run: dbt run --select intermediate
+        working-directory: dbt_chocolate_analytics
+
+      - name: dbt run - marts
+        run: dbt run --select marts
+        working-directory: dbt_chocolate_analytics
+
+      - name: dbt test
+        run: dbt test
+        working-directory: dbt_chocolate_analytics
